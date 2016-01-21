@@ -255,7 +255,7 @@ class GeoDistanceBehaviorTest extends TestCase
         $options = [
             'latitude' => 90,
             'longitude' => 0,
-            'radius' => round( (pi() * (2 * 6371))/2 ,3),
+            'radius' => round((pi() * (2 * 6371)) / 2, 3),
             'units' => 'km'
         ];
         $query = $table
@@ -265,7 +265,7 @@ class GeoDistanceBehaviorTest extends TestCase
         $this->assertEquals(10, count($result));
         foreach ($result as $row) {
             if ($row['name'] == 'south pole') {
-                $this->assertEquals(round( (pi() * (2 * 6371))/2 ,3), $row['distance']);
+                $this->assertEquals(round((pi() * (2 * 6371)) / 2, 3), $row['distance']);
             }
         }
     }
