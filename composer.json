@@ -1,0 +1,33 @@
+{
+    "name": "chris48s/cakephp-geodistance",
+    "description": "CakePHP 3 model behavior for querying geocoded data based on distance",
+    "type": "cakephp-plugin",
+    "keywords": ["cakephp", "geo", "geography", "distance"],
+    "homepage": "https://github.com/chris48s/cakephp-geodistance",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "chris48s",
+            "email": "c.mshaw@yahoo.co.uk"
+        }
+    ],
+    "require": {
+        "cakephp/cakephp": "~3.0",
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.1.*",
+        "cakephp/cakephp-codesniffer": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Chris48s\\GeoDistance\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Chris48s\\GeoDistance\\Test\\": "tests",
+            "Chris48s\\GeoDistance\\Test\\Fixture\\": "tests/Fixture"
+        }
+    }
+}
