@@ -247,8 +247,8 @@ class GeoDistanceBehaviorTest extends TestCase
     }
 
     /* every point on the earth's surface should be a max of
-       round( (pi() * (2 * 6371))/2 ,3)km away from every other point
-       based 6371km as an approximation of the earth's mean radius */
+       round((pi() * (2 * 6371)) / 2, 3)km away from every other point
+       based on 6371km as an approximation of the earth's mean radius */
     public function testLargeDistance()
     {
         $table = $this->getValidTable();
