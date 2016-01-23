@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/chris48s/cakephp-geodistance.svg?branch=master)](https://travis-ci.org/chris48s/cakephp-geodistance)
+[![Coverage Status](https://coveralls.io/repos/github/chris48s/cakephp-geodistance/badge.svg?branch=master)](https://coveralls.io/github/chris48s/cakephp-geodistance?branch=master)
+
 # CakePHP GeoDistance Plugin
 ## A CakePHP 3 Behavior for querying geocoded data by distance.
 
