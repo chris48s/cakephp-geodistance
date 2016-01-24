@@ -85,7 +85,7 @@ class GeoDistanceBehavior extends Behavior
      * @throws GeoDistanceException If $options array contains invalid config options
      * @return void
      */
-    private function _validateOptions($options)
+    private function _validateOptions(array $options)
     {
         if (!isset($options['latitude'])) {
             throw new GeoDistanceException('Parameter latitude must be specified');
