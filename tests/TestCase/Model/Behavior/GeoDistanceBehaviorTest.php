@@ -2,6 +2,7 @@
 
 namespace Chris48s\GeoDistance\Test\TestCase\Model\Behavior;
 
+use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Chris48s\GeoDistance\Exception\GeoDistanceException;
@@ -268,5 +269,45 @@ class GeoDistanceBehaviorTest extends TestCase
                 $this->assertEquals(round((pi() * (2 * 6371)) / 2, 3), $row['distance']);
             }
         }
+    }
+
+    /* Only MySQL and Postgres are supported
+       Pass in a connection to another DB engine
+       and ensure correct exception is thrown */
+    public function testInvalidDB()
+    {
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+
+        //set up a SQLite DB connection - SQLite is not supported
+        ConnectionManager::config('invalid', [
+            'url' => 'sqlite:///:memory:',
+            'timezone' => 'UTC'
+        ]);
+        $conn = ConnectionManager::get('invalid');
+
+        //create a table in SQLite
+        $conn->query("CREATE TABLE `Foo` (
+            `id` int(11) NOT NULL,
+            `lat` float,
+            `lng` float,
+            PRIMARY KEY (`id`)
+        );");
+        $table = TableRegistry::get('Foo', ['connection' => $conn]);
+        $table->addBehavior('Chris48s/GeoDistance.GeoDistance', [
+            'latitudeColumn' => 'lat',
+            'longitudeColumn' => 'lng'
+        ]);
+
+        //try to query it
+        $options = [
+            'latitude' => 90,
+            'longitude' => 0,
+            'radius' => 1,
+            'connection' => $conn
+        ];
+        $query = $table->find('bydistance', $options);
+
+        //tidy up
+        ConnectionManager::dropAlias('invalid');
     }
 }

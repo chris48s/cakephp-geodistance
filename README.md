@@ -32,7 +32,7 @@ and run `composer install` or `composer update`, as applicable.
 
 ## Supported databases
 
-Currently MySQL is the only supported database engine.
+Only MySQL and Postgres are supported.
 
 ## Usage
 

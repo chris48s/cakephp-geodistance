@@ -2,6 +2,8 @@
 
 namespace Chris48s\GeoDistance\Model\Behavior;
 
+use Cake\Database\Driver\Mysql;
+use Cake\Database\Driver\Postgres;
 use Cake\ORM\Behavior;
 use Cake\ORM\Query;
 use Chris48s\GeoDistance\Exception\GeoDistanceException;
@@ -39,21 +41,29 @@ class GeoDistanceBehavior extends Behavior
         $earthRadius = $this->_getEarthRadius($units);
 
         // construct query
-        $query->find('all', [
-            'fields' => [
-                'distance' => "ROUND(
-                    (:earth_radius * ACOS(
-                        COS(RADIANS(:latitude)) *
-                        COS(RADIANS({$this->_config['latitudeColumn']})) *
-                        COS( RADIANS({$this->_config['longitudeColumn']}) - RADIANS(:longitude) ) +
-                        SIN(RADIANS(:latitude)) *
-                        SIN(RADIANS({$this->_config['latitudeColumn']}))
-                    ) )
-                , 3)"
-            ],
+        $sphericalCosineSql = "(:earth_radius * ACOS(
+            COS(RADIANS(:latitude)) *
+            COS(RADIANS({$this->_config['latitudeColumn']})) *
+            COS( RADIANS({$this->_config['longitudeColumn']}) - RADIANS(:longitude) ) +
+            SIN(RADIANS(:latitude)) *
+            SIN(RADIANS({$this->_config['latitudeColumn']}))
+        ) )";
+
+        $connection = $query->connection();
+        if ($connection->driver() instanceof Mysql) {
+            $distance = "ROUND($sphericalCosineSql, 3)";
+        } elseif ($connection->driver() instanceof Postgres) {
+            $distance = "ROUND( CAST($sphericalCosineSql AS numeric), 3)";
+        } else {
+            throw new GeoDistanceException('Only MySQL and Postgres are supported');
+        }
+
+        $queryOptions = [
+            'fields' => ['distance' => $distance],
             'order' => ['distance ASC'],
-            'having' => ['distance <=' => $radius]
-        ])
+            'conditions' => ["$distance <=" => $radius]
+        ];
+        $query->find('all', $queryOptions)
         ->bind(':earth_radius', $earthRadius, 'integer')
         ->bind(':latitude', $latitude, 'float')
         ->bind(':longitude', $longitude, 'float');

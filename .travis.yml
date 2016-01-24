@@ -10,6 +10,7 @@ sudo: false
 env:
   matrix:
     - DB=mysql db_dsn='mysql://travis@127.0.0.1/geodistance_test'
+    - DB=pgsql db_dsn='postgres://postgres@127.0.0.1/geodistance_test'
   global:
     - DEFAULT=1
 
@@ -18,12 +19,13 @@ matrix:
     - php: 5.5
       env: PHPCS=1 DEFAULT=0
     - php: 5.5
-      env: COVERALLS=1 DEFAULT=0 DB=mysql db_dsn='mysql://travis@127.0.0.1/geodistance_test'
+      env: COVERALLS=1 DEFAULT=0 DB=pgsql db_dsn='postgres://postgres@127.0.0.1/geodistance_test'
 
 before_script:
   - composer self-update
   - composer install --prefer-dist --no-interaction --dev
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE geodistance_test;'; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE geodistance_test;' -U postgres; fi"
   - command -v phpenv > /dev/null && phpenv rehash || true
   - sh -c "if [ '$COVERALLS' = '1' ]; then mkdir -p build/logs; fi"
 
