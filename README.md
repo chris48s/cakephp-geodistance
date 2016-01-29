@@ -14,18 +14,13 @@ add them using a geocoding plugin. Try
 
 ## Installation
 
+Install from [packagist](https://packagist.org/packages/chris48s/cakephp-geodistance) using [composer](https://getcomposer.org/).
 Add the following to your `composer.json`:
 
 ```
 "require": {
     "chris48s/cakephp-geodistance": "dev-master"
-},
-"repositories": [
-    {
-        "type": "vcs",
-        "url": "https://github.com/chris48s/cakephp-geodistance.git"
-    }
-]
+}
 ```
 
 and run `composer install` or `composer update`, as applicable.
