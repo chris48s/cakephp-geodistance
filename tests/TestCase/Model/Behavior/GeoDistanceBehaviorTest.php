@@ -5,7 +5,8 @@ namespace Chris48s\GeoDistance\Test\TestCase\Model\Behavior;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Chris48s\GeoDistance\Exception\GeoDistanceException;
+use Chris48s\GeoDistance\Exception\GeoDistanceFatalException;
+use Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException;
 use Chris48s\GeoDistance\Model\Behavior\GeoDistanceBehavior;
 
 class GeoDistanceBehaviorTest extends TestCase
@@ -32,27 +33,19 @@ class GeoDistanceBehaviorTest extends TestCase
     }
 
     /* our fixture table does not contain columns called 'latitude' or 'longitude'
-       so we expect a PDOException to be thrown */
+       so we expect a GeoDistanceFatalException to be thrown */
     public function testSetupInvalidColumns()
     {
-        $this->setExpectedException('PDOException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceFatalException');
 
         $table = TableRegistry::get('Foo');
         $table->addBehavior('Chris48s/GeoDistance.GeoDistance');
-        $options = [
-            'latitude' => 0,
-            'longitude' => 0,
-            'radius' => 0,
-            'units' => 'kilometres'
-        ];
-        $query = $table->find('bydistance', $options);
-        $query->toArray();
     }
 
-    // ensure GeoDistanceException is thrown if 'latitude' is not specified
+    // ensure GeoDistanceInvalidArgumentException is thrown if 'latitude' is not specified
     public function testInvalidQueryParamsNoLat()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException');
 
         $table = $this->getValidTable();
         $options = [
@@ -63,10 +56,10 @@ class GeoDistanceBehaviorTest extends TestCase
         $query->toArray();
     }
 
-    // ensure GeoDistanceException is thrown if 'longitude' is not specified
+    // ensure GeoDistanceInvalidArgumentException is thrown if 'longitude' is not specified
     public function testInvalidQueryParamsNoLng()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException');
 
         $table = $this->getValidTable();
         $options = [
@@ -77,10 +70,10 @@ class GeoDistanceBehaviorTest extends TestCase
         $query->toArray();
     }
 
-    // ensure GeoDistanceException is thrown if 'radius' is not specified
+    // ensure GeoDistanceInvalidArgumentException is thrown if 'radius' is not specified
     public function testInvalidQueryParamsNoRadius()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException');
 
         $table = $this->getValidTable();
         $options = [
@@ -91,10 +84,10 @@ class GeoDistanceBehaviorTest extends TestCase
         $query->toArray();
     }
 
-    // ensure GeoDistanceException is thrown if 'latitude' is outside valid range
+    // ensure GeoDistanceInvalidArgumentException is thrown if 'latitude' is outside valid range
     public function testInvalidQueryParamsBadLat1()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException');
 
         $table = $this->getValidTable();
         $options = [
@@ -106,10 +99,10 @@ class GeoDistanceBehaviorTest extends TestCase
         $query->toArray();
     }
 
-    // ensure GeoDistanceException is thrown if 'latitude' is not numeric
+    // ensure GeoDistanceInvalidArgumentException is thrown if 'latitude' is not numeric
     public function testInvalidQueryParamsBadLat2()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException');
 
         $table = $this->getValidTable();
         $options = [
@@ -121,10 +114,10 @@ class GeoDistanceBehaviorTest extends TestCase
         $query->toArray();
     }
 
-    // ensure GeoDistanceException is thrown if 'longitude' is outside valid range
+    // ensure GeoDistanceInvalidArgumentException is thrown if 'longitude' is outside valid range
     public function testInvalidQueryParamsBadLng1()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException');
 
         $table = $this->getValidTable();
         $options = [
@@ -136,10 +129,10 @@ class GeoDistanceBehaviorTest extends TestCase
         $query->toArray();
     }
 
-    // ensure GeoDistanceException is thrown if 'longitude' is not numeric
+    // ensure GeoDistanceInvalidArgumentException is thrown if 'longitude' is not numeric
     public function testInvalidQueryParamsBadLng2()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException');
 
         $table = $this->getValidTable();
         $options = [
@@ -151,10 +144,10 @@ class GeoDistanceBehaviorTest extends TestCase
         $query->toArray();
     }
 
-    // ensure GeoDistanceException is thrown if 'radius' is not numeric
+    // ensure GeoDistanceInvalidArgumentException is thrown if 'radius' is not numeric
     public function testInvalidQueryParamsBadRadius()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException');
 
         $table = $this->getValidTable();
         $options = [
@@ -166,11 +159,11 @@ class GeoDistanceBehaviorTest extends TestCase
         $query->toArray();
     }
 
-    /* ensure GeoDistanceException is thrown if
+    /* ensure GeoDistanceInvalidArgumentException is thrown if
        'units' is not 'miles', 'mi', 'kilometres' or 'km' */
     public function testInvalidQueryParamsBadUnits()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException');
 
         $table = $this->getValidTable();
         $options = [
@@ -276,7 +269,7 @@ class GeoDistanceBehaviorTest extends TestCase
        and ensure correct exception is thrown */
     public function testInvalidDB()
     {
-        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceException');
+        $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceFatalException');
 
         //set up a SQLite DB connection - SQLite is not supported
         ConnectionManager::config('invalid', [
@@ -297,15 +290,6 @@ class GeoDistanceBehaviorTest extends TestCase
             'latitudeColumn' => 'lat',
             'longitudeColumn' => 'lng'
         ]);
-
-        //try to query it
-        $options = [
-            'latitude' => 90,
-            'longitude' => 0,
-            'radius' => 1,
-            'connection' => $conn
-        ];
-        $query = $table->find('bydistance', $options);
 
         //tidy up
         ConnectionManager::dropAlias('invalid');

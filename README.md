@@ -114,7 +114,7 @@ $query = $myTable
 ```
 
 `latitude`, `longitude` and `radius` are required parameters. If required
-parameters are missing or invalid, an exception of class `GeoDistanceException`
+parameters are missing or invalid, an exception of class `GeoDistanceInvalidArgumentException`
 will be thrown.
 
 You can also pass additional conditions or parameters to the query and

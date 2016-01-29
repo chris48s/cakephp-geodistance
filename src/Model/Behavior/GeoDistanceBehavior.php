@@ -6,7 +6,8 @@ use Cake\Database\Driver\Mysql;
 use Cake\Database\Driver\Postgres;
 use Cake\ORM\Behavior;
 use Cake\ORM\Query;
-use Chris48s\GeoDistance\Exception\GeoDistanceException;
+use Chris48s\GeoDistance\Exception\GeoDistanceFatalException;
+use Chris48s\GeoDistance\Exception\GeoDistanceInvalidArgumentException;
 
 class GeoDistanceBehavior extends Behavior
 {
@@ -17,11 +18,37 @@ class GeoDistanceBehavior extends Behavior
     ];
 
     /**
+     * Constructor hook method
+     *
+     * @param array $config The configuration settings provided to this behavior
+     * @throws GeoDistanceFatalException If database engine is not MySQL or Postgres
+     * @throws GeoDistanceFatalException If latitudeColumn or longitudeColumn are invalid
+     * @return void
+     */
+    public function initialize(array $config)
+    {
+        $connection = $this->_table->connection();
+
+        //ensure database engine is MySQL or Postgres
+        if ((!$connection->driver() instanceof Mysql) && (!$connection->driver() instanceof Postgres)) {
+            throw new GeoDistanceFatalException('Only MySQL and Postgres are supported');
+        }
+
+        //ensure latitudeColumn and longitudeColumn exist in table
+        $collection = $connection->schemaCollection();
+        $columns = $collection->describe($this->_table->table())->columns();
+        if (!in_array($this->_config['latitudeColumn'], $columns) ||
+            !in_array($this->_config['longitudeColumn'], $columns)) {
+            throw new GeoDistanceFatalException('Invalid column');
+        }
+    }
+
+    /**
      * Find By Distance using spherical cosine law
      *
      * @param \Cake\ORM\Query $query Query to modify
      * @param array $options Options for the query
-     * @throws GeoDistanceException If parameters are missing or invalid
+     * @throws GeoDistanceInvalidArgumentException If parameters are missing or invalid
      * @return \Cake\ORM\Query
      */
     public function findByDistance(Query $query, array $options)
@@ -54,8 +81,6 @@ class GeoDistanceBehavior extends Behavior
             $distance = "ROUND($sphericalCosineSql, 3)";
         } elseif ($connection->driver() instanceof Postgres) {
             $distance = "ROUND( CAST($sphericalCosineSql AS numeric), 3)";
-        } else {
-            throw new GeoDistanceException('Only MySQL and Postgres are supported');
         }
 
         $queryOptions = [
@@ -91,39 +116,39 @@ class GeoDistanceBehavior extends Behavior
      * Validate Options
      *
      * Check the configuration options conform to expected values/formats
-     * @param array $options Miles or km
-     * @throws GeoDistanceException If $options array contains invalid config options
+     * @param array $options Options for the query
+     * @throws GeoDistanceInvalidArgumentException If parameters are missing or invalid
      * @return void
      */
     private function _validateOptions(array $options)
     {
         if (!isset($options['latitude'])) {
-            throw new GeoDistanceException('Parameter latitude must be specified');
+            throw new GeoDistanceInvalidArgumentException('Parameter latitude must be specified');
         } else {
             if (($options['latitude'] < -90) || ($options['latitude'] > 90) || !is_numeric($options['latitude'])) {
-                throw new GeoDistanceException('Parameter latitude must be in the range -90 - 90');
+                throw new GeoDistanceInvalidArgumentException('Parameter latitude must be in the range -90 - 90');
             }
         }
 
         if (!isset($options['longitude'])) {
-            throw new GeoDistanceException('Parameter longitude must be specified');
+            throw new GeoDistanceInvalidArgumentException('Parameter longitude must be specified');
         } else {
             if (($options['longitude'] < -180) || ($options['longitude'] > 180) || !is_numeric($options['longitude'])) {
-                throw new GeoDistanceException('Parameter longitude must be in the range -180 - 180');
+                throw new GeoDistanceInvalidArgumentException('Parameter longitude must be in the range -180 - 180');
             }
         }
 
         if (!isset($options['radius'])) {
-            throw new GeoDistanceException('Parameter radius must be specified');
+            throw new GeoDistanceInvalidArgumentException('Parameter radius must be specified');
         } else {
             if (!is_numeric($options['radius'])) {
-                throw new GeoDistanceException('Parameter radius must be a number');
+                throw new GeoDistanceInvalidArgumentException('Parameter radius must be a number');
             }
         }
 
         if (isset($options['units']) && !empty($options['units'])) {
             if (!in_array($options['units'], ['miles', 'mi', 'kilometres', 'km'])) {
-                throw new GeoDistanceException(
+                throw new GeoDistanceInvalidArgumentException(
                     "Parameter units must be one of: 'miles', 'mi', 'kilometres', 'km'"
                 );
             }
