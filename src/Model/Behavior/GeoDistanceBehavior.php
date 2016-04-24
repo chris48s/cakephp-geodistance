@@ -41,6 +41,8 @@ class GeoDistanceBehavior extends Behavior
             !in_array($this->_config['longitudeColumn'], $columns)) {
             throw new GeoDistanceFatalException('Invalid column');
         }
+        $this->_config['latitudeColumn'] = $this->_table->alias() . '.' . $this->_config['latitudeColumn'];
+        $this->_config['longitudeColumn'] = $this->_table->alias() . '.' . $this->_config['longitudeColumn'];
     }
 
     /**
@@ -86,12 +88,14 @@ class GeoDistanceBehavior extends Behavior
         $queryOptions = [
             'fields' => ['distance' => $distance],
             'order' => ['distance ASC'],
-            'conditions' => ["$distance <=" => $radius]
+            'conditions' => ["$distance <= :radius"]
         ];
         $query->find('all', $queryOptions)
+        ->autoFields(true)
         ->bind(':earth_radius', $earthRadius, 'integer')
         ->bind(':latitude', $latitude, 'float')
-        ->bind(':longitude', $longitude, 'float');
+        ->bind(':longitude', $longitude, 'float')
+        ->bind(':radius', $radius, 'float');
 
         return $query;
     }
