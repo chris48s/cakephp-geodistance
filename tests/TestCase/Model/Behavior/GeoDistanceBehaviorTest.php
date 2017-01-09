@@ -29,6 +29,7 @@ class GeoDistanceBehaviorTest extends TestCase
             'latitudeColumn' => 'lat',
             'longitudeColumn' => 'lng'
         ]);
+
         return $table;
     }
 
