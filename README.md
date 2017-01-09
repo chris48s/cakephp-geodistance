@@ -19,7 +19,7 @@ Add the following to your `composer.json`:
 
 ```
 "require": {
-    "chris48s/cakephp-geodistance": "dev-master"
+    "chris48s/cakephp-geodistance": "^1.0.0"
 }
 ```
 
