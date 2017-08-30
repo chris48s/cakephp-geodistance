@@ -1,7 +1,6 @@
 language: php
 
 php:
-  - 5.5
   - 5.6
   - 7.0
   - 7.1
@@ -17,7 +16,7 @@ env:
 
 matrix:
   include:
-    - php: 5.5
+    - php: 7.1
       env: PHPCS=1 DEFAULT=0
 
 before_script:
@@ -30,8 +29,8 @@ before_script:
 
 script:
   - sh -c "if [ '$PHPCS' = '1' ]; then vendor/bin/phpcs -n -p --extensions=php --standard=vendor/cakephp/cakephp-codesniffer/CakePHP --ignore=vendor --ignore=docs --ignore=tests/bootstrap.php . ; fi"
-  - sh -c "if [ '$DEFAULT' = '1' ]; then phpunit; fi"
-  - sh -c "if [ '$DEFAULT' = '1' ]; then phpunit --stderr --coverage-clover build/logs/clover.xml; fi"
+  - sh -c "if [ '$DEFAULT' = '1' ]; then vendor/bin/phpunit; fi"
+  - sh -c "if [ '$DEFAULT' = '1' ]; then vendor/bin/phpunit --stderr --coverage-clover build/logs/clover.xml; fi"
 
 after_script:
   - sh -c "if [ '$DEFAULT' = '1' ]; then php vendor/bin/coveralls -v; fi"
