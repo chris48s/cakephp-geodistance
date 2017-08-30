@@ -177,6 +177,25 @@ class GeoDistanceBehaviorTest extends TestCase
         $query->toArray();
     }
 
+    // check chaining ->select() works correctly
+    public function testValidQueryWithSelect()
+    {
+        $table = $this->getValidTable();
+        $options = [
+            'latitude' => 0,
+            'longitude' => 180,
+            'radius' => 0,
+            'units' => 'km'
+        ];
+        $query = $table
+            ->find('bydistance', $options)
+            ->select(['name', 'lat', 'lng']);
+        $result = $query->toArray();
+        $this->assertArrayHasKey('name', $result[0]);
+        $this->assertArrayHasKey('distance', $result[0]);
+        $this->assertArrayNotHasKey('id', $result[0]);
+    }
+
     // check (0, 180) and (0, -180) are considered the same point
     public function testWrapAround()
     {

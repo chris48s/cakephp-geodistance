@@ -91,7 +91,6 @@ class GeoDistanceBehavior extends Behavior
             'conditions' => ["$distance <= :radius"]
         ];
         $query->find('all', $queryOptions)
-        ->autoFields(true)
         ->bind(':earth_radius', $earthRadius, 'integer')
         ->bind(':latitude', $latitude, 'float')
         ->bind(':longitude', $longitude, 'float')
