@@ -74,7 +74,7 @@ class MyTable extends Table
     public function initialize(array $config)
     {
         parent::initialize($config);
-        $this->addBehavior('Chris48s/GeoDistance.GeoDistance' [
+        $this->addBehavior('Chris48s/GeoDistance.GeoDistance', [
             'latitudeColumn' => 'lat',
             'longitudeColumn' => 'lng',
             'units' => 'km'
