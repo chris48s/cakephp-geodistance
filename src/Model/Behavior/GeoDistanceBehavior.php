@@ -27,22 +27,22 @@ class GeoDistanceBehavior extends Behavior
      */
     public function initialize(array $config)
     {
-        $connection = $this->_table->connection();
+        $connection = $this->_table->getConnection();
 
         //ensure database engine is MySQL or Postgres
-        if ((!$connection->driver() instanceof Mysql) && (!$connection->driver() instanceof Postgres)) {
+        if ((!$connection->getDriver() instanceof Mysql) && (!$connection->getDriver() instanceof Postgres)) {
             throw new GeoDistanceFatalException('Only MySQL and Postgres are supported');
         }
 
         //ensure latitudeColumn and longitudeColumn exist in table
-        $collection = $connection->schemaCollection();
-        $columns = $collection->describe($this->_table->table())->columns();
+        $collection = $connection->getSchemaCollection();
+        $columns = $collection->describe($this->_table->getTable())->columns();
         if (!in_array($this->_config['latitudeColumn'], $columns) ||
             !in_array($this->_config['longitudeColumn'], $columns)) {
             throw new GeoDistanceFatalException('Invalid column');
         }
-        $this->_config['latitudeColumn'] = $this->_table->alias() . '.' . $this->_config['latitudeColumn'];
-        $this->_config['longitudeColumn'] = $this->_table->alias() . '.' . $this->_config['longitudeColumn'];
+        $this->_config['latitudeColumn'] = $this->_table->getAlias() . '.' . $this->_config['latitudeColumn'];
+        $this->_config['longitudeColumn'] = $this->_table->getAlias() . '.' . $this->_config['longitudeColumn'];
     }
 
     /**
@@ -78,10 +78,10 @@ class GeoDistanceBehavior extends Behavior
             SIN(RADIANS({$this->_config['latitudeColumn']}))
         ) )";
 
-        $connection = $query->connection();
-        if ($connection->driver() instanceof Mysql) {
+        $connection = $query->getConnection();
+        if ($connection->getDriver() instanceof Mysql) {
             $distance = "ROUND($sphericalCosineSql, 3)";
-        } elseif ($connection->driver() instanceof Postgres) {
+        } elseif ($connection->getDriver() instanceof Postgres) {
             $distance = "ROUND( CAST($sphericalCosineSql AS numeric), 3)";
         }
 

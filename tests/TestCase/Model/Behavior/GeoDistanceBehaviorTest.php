@@ -292,7 +292,7 @@ class GeoDistanceBehaviorTest extends TestCase
         $this->setExpectedException('Chris48s\GeoDistance\Exception\GeoDistanceFatalException');
 
         //set up a SQLite DB connection - SQLite is not supported
-        ConnectionManager::config('invalid', [
+        ConnectionManager::setConfig('invalid', [
             'url' => 'sqlite:///:memory:',
             'timezone' => 'UTC'
         ]);
